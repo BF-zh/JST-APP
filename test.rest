@@ -1,0 +1,10 @@
+@host=https://erp.58dg.cn
+
+### 登录
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "account": "15881881888",
+    "password": "123456"
+}

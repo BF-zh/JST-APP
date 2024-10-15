@@ -1,37 +1,79 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { AuthProvider } from '@/components/AuthProvider'
+import { fade, lighten } from '@jiaminghi/color'
+import { Colors, createTheme, ThemeProvider } from '@rneui/themed'
+import { Slot } from 'expo-router'
+import { RootSiblingParent } from 'react-native-root-siblings'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const theme = createTheme({
+  lightColors: {
+    background: '#ffffff',
+    primary: '#2089dc',
+  },
+  darkColors: {
+    background: '#000000',
+  },
+  components: {
+    Button(props, theme) {
+      return {
+        raised: true,
+        containerStyle: {
+          shadowColor: 'black',
+          shadowOpacity: 0.01,
+          shadowOffset: { width: 0, height: 0 },
+          shadowRadius: 8,
+          borderRadius: 10,
+        },
+        disabledStyle: {
+          backgroundColor: fade(theme.colors.primary, 60),
+          borderRadius: 10,
+        },
+        disabledTitleStyle: {
+          color: fade(theme.colors.white, 80),
+        },
+      }
+    },
+    Input: {
+      containerStyle: {
+        backgroundColor: 'white',
+        width: '90%',
+        maxWidth: 400,
+        borderRadius: 10,
+        shadowColor: 'black',
+        shadowOpacity: 0.01,
+        shadowOffset: { width: 0, height: 0 },
+        shadowRadius: 8,
+        marginBottom: 20,
+        padding: 5,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderStyle: 'solid',
+      },
+      inputContainerStyle: {
+        borderBottomWidth: 0,
+      },
+      errorStyle: {
+        display: 'none',
+      },
+    },
+    Header: {
+      backgroundColor: 'transparent',
+    },
+  },
+})
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+export default function Root() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
+    <RootSiblingParent>
+      <SafeAreaProvider>
+        <ThemeProvider theme={theme}>
+          <AuthProvider>
+            <Slot />
+          </AuthProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+      <Toast />
+    </RootSiblingParent>
+  )
 }
